@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/mttvetco/public_html/serdangeagles.my/
+    - /bin/cp -R * $DEPLOYPATH
