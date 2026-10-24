@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard · Serdang Eagles</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body style="padding: 40px; text-align: center; background: var(--black);">
+  <h1 style="font-family: var(--font-h); color: var(--orange); font-size: 3rem;">Dashboard</h1>
+  <p style="color: var(--white); margin-top: 20px;">Kalau ko nampak page ni, maksudnya ko dah berjaya login!</p>
+  
+  <button onclick="logout()" class="btn btn-ghost" style="margin-top: 40px;">Logout</button>
+
+  <script src="js/config.js"></script>
+  <script>
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

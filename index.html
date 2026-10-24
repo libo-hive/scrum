@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D0D0D">
+<title>Serdang Eagles Rugby Club</title>
+<meta name="description" content="Serdang Eagles Rugby Club — youth rugby in Selangor. Est. 2024.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Serdang Eagles Rugby Club">
+<meta property="og:description" content="Youth rugby in Selangor. Est. 2024.">
+<meta property="og:image" content="images/hero.png">
+
+<link rel="icon" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="/" class="brand">
+    <img src="images/logo.png" alt="Serdang Eagles" class="brand-logo">
+    <span class="brand-name">SERDANG EAGLES</span>
+  </a>
+  <div class="header-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-nav" id="mobileNav">
+  <a href="#home">Home</a>
+  <a href="#results">Results</a>
+  <a href="#about">About</a>
+  <a href="#join">Join Us</a>
+  <a href="#contact">Contact</a>
+  <a href="login.html" style="color: var(--orange);">Member Login →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <img src="images/hero.png" alt="Team" class="hero-img">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-inner">
+    <img src="images/logo.png" alt="Logo" class="hero-logo">
+    <div class="hero-tag">EST. 2024 · SELANGOR</div>
+    <h1 class="hero-title">SERDANG<br><span>EAGLES</span></h1>
+    <p class="hero-sub">Rugby Club · Building character through the game.</p>
+    <div class="hero-cta">
+      <a href="#join" class="btn btn-primary">Join the Club</a>
+      <a href="#results" class="btn btn-ghost">View Results</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-bar">
+  <div class="stat"><div class="stat-val">60+</div><div class="stat-lbl">Players</div></div>
+  <div class="stat"><div class="stat-val">5</div><div class="stat-lbl">Teams</div></div>
+  <div class="stat" id="statWins"><div class="stat-val">—</div><div class="stat-lbl">Wins</div></div>
+  <div class="stat" id="statRate"><div class="stat-val">—</div><div class="stat-lbl">Win Rate</div></div>
+</section>
+
+<!-- NEXT MATCH -->
+<section class="section" id="next">
+  <div class="container">
+    <div class="sec-tag">UP NEXT</div>
+    <h2 class="sec-title">Next Match</h2>
+    <div id="nextMatchBox">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section section-alt" id="results">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <div class="sec-tag">FROM THE PITCH</div>
+        <h2 class="sec-title">Recent Results</h2>
+      </div>
+    </div>
+    <div id="resultsList">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="sec-tag">ABOUT</div>
+    <h2 class="sec-title">The Club</h2>
+
+    <div class="president-card">
+      <div class="president-head">
+        <div class="president-avatar">Y</div>
+        <div>
+          <div class="president-role">President's Message</div>
+          <div class="president-name">Yasser Ibrahim</div>
+          <div class="president-title">Club President</div>
+        </div>
+      </div>
+      <p class="president-msg">"Founded in 2024 with fewer than 15 players, we began as a small group with a big dream. Today, we are more than 60 players strong. From a grassroots start, we have grown into a committed rugby community built on passion and development. Our goal is simple — to use rugby to shape boys and girls into individuals with strong values and discipline, both on and off the field."</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row"><span>📍</span><div><div class="info-lbl">Home Ground</div><div class="info-val">Padang SK Sri Serdang, Selangor</div></div></div>
+      <div class="info-row"><span>👕</span><div><div class="info-lbl">Colours</div><div class="info-val">Orange & Black</div></div></div>
+      <div class="info-row"><span>📅</span><div><div class="info-lbl">Founded</div><div class="info-val">2024</div></div></div>
+      <div class="info-row"><span>🏉</span><div><div class="info-lbl">Teams</div><div class="info-val">U14 · U12 · U10 · U10 Girls · U8</div></div></div>
+    </div>
+
+    <div class="sec-tag" style="margin-top:40px">COACHING TEAM</div>
+    <div class="people-list" id="coachesList">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN -->
+<section class="section section-join" id="join">
+  <div class="container">
+    <div class="join-card">
+      <div class="join-badge">OPEN RECRUITMENT</div>
+      <h2 class="join-title">Join the Eagles Family</h2>
+      <p class="join-sub">We welcome youth players aged 8–16 from all backgrounds. No prior experience needed — just passion and dedication.</p>
+
+      <div class="join-list">
+        <div class="join-item"><span>🏉</span>Professional Coaching</div>
+        <div class="join-item"><span>🏆</span>Tournament Competitions</div>
+        <div class="join-item"><span>💪</span>Structured Fitness</div>
+        <div class="join-item"><span>👕</span>Club Jersey & Kit</div>
+        <div class="join-item"><span>🎓</span>Life Skills & Leadership</div>
+      </div>
+
+      <div class="join-schedule">
+        <div class="join-sch-lbl">TRAINING SCHEDULE</div>
+        <div class="join-sch-row">
+          <span class="chip">Sunday</span>
+          <span class="chip chip-dim">8 – 11 AM</span>
+        </div>
+      </div>
+
+      <a href="mailto:serdangeaglesrc@gmail.com?subject=Player Registration Enquiry" class="btn btn-primary btn-full">
+        Enquire About Joining
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / SOCIAL -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="sec-tag">GET IN TOUCH</div>
+    <h2 class="sec-title">Contact</h2>
+
+    <a href="https://instagram.com/serdangeagles" target="_blank" rel="noopener" class="contact-card">
+      <span>📸</span><div><div class="c-lbl">Instagram</div><div class="c-val">@serdangeagles</div></div>
+    </a>
+    <a href="https://facebook.com/serdangeaglesrugbyclub" target="_blank" rel="noopener" class="contact-card">
+      <span>📘</span><div><div class="c-lbl">Facebook</div><div class="c-val">Serdang Eagles Rugby Club</div></div>
+    </a>
+    <a href="mailto:serdangeaglesrc@gmail.com" class="contact-card">
+      <span>✉️</span><div><div class="c-lbl">Email</div><div class="c-val">serdangeaglesrc@gmail.com</div></div>
+    </a>
+    <a href="tel:+60193162016" class="contact-card">
+      <span>📞</span><div><div class="c-lbl">Phone</div><div class="c-val">+60 19-316 2016 (Puan El)</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <img src="images/logo.png" alt="Logo" class="footer-logo">
+  <div class="footer-name">SERDANG EAGLES RUGBY CLUB</div>
+  <div class="footer-copy">© 2026 · Est. 2024 · Selangor, Malaysia</div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

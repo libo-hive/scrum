@@ -1,0 +1,127 @@
+.auth-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--black);
+  background-image: radial-gradient(circle at 50% 0%, rgba(217,123,58,0.15) 0%, transparent 60%);
+  padding: 20px;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.auth-logo {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 0 16px rgba(217,123,58,0.4));
+}
+
+.auth-brand-name {
+  font-family: var(--font-h);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.auth-title {
+  font-family: var(--font-h);
+  font-size: 1.8rem;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.auth-sub {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+
+.auth-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #EF4444;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(245,245,240,0.7);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--line);
+  color: var(--white);
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: var(--font-b);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+.auth-footer span {
+  font-size: 0.75rem;
+  color: rgba(245,245,240,0.4);
+}
+
+.auth-back {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-back:hover {
+  color: var(--orange);
+}
