@@ -1,0 +1,16 @@
+/* coach specific sheet */
+@import url('./coach.css');
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+}
+
+.page-shell {
+  padding-top: 18px;
+}
+
+.table-card {
+  margin-top: 18px;
+}
