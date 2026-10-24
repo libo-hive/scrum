@@ -1,0 +1,139 @@
+/* Semua tema asas dari coach.css. Ni tambah finance-specific sahaja. */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+@media (min-width: 720px) {
+  .summary-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.summary-card .label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+.summary-card .value {
+  font-family: var(--font-h);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.summary-card .value.good { color: var(--good); }
+.summary-card .value.bad { color: var(--bad); }
+.summary-card .value.orange { color: var(--orange); }
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 14px;
+  padding-bottom: 4px;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+
+.fee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fee-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.fee-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(217,123,58,0.15);
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-h);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.fee-body { flex: 1; min-width: 0; }
+.fee-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fee-meta {
+  font-size: 0.72rem;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.fee-amount {
+  font-family: var(--font-h);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+.fee-actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+.btn-mini {
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.btn-mini:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-paid {
+  background: rgba(34,197,94,0.15);
+  color: var(--good);
+  border-color: rgba(34,197,94,0.3);
+}
+.btn-waive {
+  background: rgba(245,158,11,0.15);
+  color: var(--warn);
+  border-color: rgba(245,158,11,0.3);
+}
+.badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.badge-paid { background: rgba(34,197,94,0.15); color: var(--good); }
+.badge-unpaid { background: rgba(239,68,68,0.15); color: var(--bad); }
+.badge-waived { background: rgba(245,158,11,0.15); color: var(--warn); }
+
+@media (min-width: 720px) {
+  #kpi-grid { grid-template-columns: repeat(4, 1fr); }
+}
