@@ -3,8 +3,8 @@
 // --- 1. INIT SUPABASE ---
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-const SUPABASE_URL = 'https://xxxxx.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbG...'; // Ganti dengan anon key ko
+const SUPABASE_URL = 'https://mtopqypcrmzihmfueujy.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3BxeXBjcm16aWhtZnVldWp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwMDQ2OTMsImV4cCI6MjEwNzU4MDY5M30.oocXGBr6pBA7GS1KjOhWIPejHausQ3k9UgRxKQ0fgh4'; // Ganti dengan anon key ko
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
