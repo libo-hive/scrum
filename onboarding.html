@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D">
+  <title>Complete your profile · Serdang Eagles</title>
+  <link rel="icon" href="images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/onboarding.css">
+</head>
+<body class="auth-body onboarding-body">
+  <main class="auth-container onboarding-container">
+    <a href="index.html" class="auth-brand">
+      <img src="images/logo.png" alt="Serdang Eagles" class="auth-logo">
+      <div class="auth-brand-name">SERDANG EAGLES</div>
+    </a>
+    <section class="auth-card onboarding-card">
+      <div class="onboarding-kicker"><span class="step-dot"></span> MEMBER SETUP <span class="step-line"></span> STEP 2 OF 2</div>
+      <h1 class="auth-title">Your profile</h1>
+      <p class="auth-sub" id="onboardingIntro">A few details help us set up your club experience.</p>
+      <div class="profile-summary" id="profileSummary" hidden></div>
+      <div id="onboardingMessage" class="onboarding-message" role="status" aria-live="polite" hidden></div>
+      <form id="onboardingForm" hidden>
+        <div id="roleFields" class="role-fields"></div>
+        <button type="submit" id="onboardingSubmit" class="btn btn-primary btn-full">Complete profile &amp; open dashboard</button>
+      </form>
+      <button type="button" id="signOutButton" class="onboarding-signout" hidden>Sign out</button>
+    </section>
+    <a href="index.html" class="auth-back">← Back to club home</a>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/onboarding.js?v=parent-player-registration"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D"><title>Teams · Serdang Eagles</title>
+  <link rel="icon" href="images/logo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/admin-pages.css"><link rel="stylesheet" href="css/fab.css"><link rel="stylesheet" href="css/bottom-nav.css">
+</head>
+<body>
+  <header class="app-header"><a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a>
+    <div class="app-title"><div class="app-title-main">Club management</div><div class="app-title-sub">Teams &amp; squads</div></div>
+    <button class="icon-btn" id="logout-btn" title="Sign out" aria-label="Sign out">↗</button>
+  </header>
+  <main class="app-main admin-page-main">
+    <div class="dash-section"><div class="dash-tag">Manage your club</div><h1 class="dash-title">Teams &amp; squads</h1></div>
+    <p class="page-intro">Set up age groups, assign coaches and manage player rosters.</p>
+    <div id="page-message" class="page-message" role="status" aria-live="polite" hidden></div>
+    <div class="admin-panel">
+      <div class="admin-panel-head"><h2 class="admin-section-title">Club teams</h2></div>
+      <div id="team-list" class="admin-list"><div class="admin-empty">Loading teams…</div></div>
+    </div>
+  </main>
+  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Admin navigation" hidden></nav>
+  <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="teams" hidden></div>
+  <dialog id="team-dialog" class="admin-dialog"><form id="team-form" class="admin-form">
+    <div class="admin-panel-head"><h2 class="admin-section-title">Create team</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
+    <div class="admin-form-grid">
+      <label>Team name<input name="name" required maxlength="100" placeholder="e.g. Serdang Eagles U14"></label>
+      <label>Age group / category<input name="age_category" maxlength="60" placeholder="e.g. U14"></label>
+      <label>Sport<input name="sport" required maxlength="40" value="rugby"></label>
+      <label>Assign coach<select name="coach_id" id="team-coach"><option value="">No coach assigned</option></select></label>
+    </div>
+    <div class="admin-form-actions"><button type="button" class="admin-button-secondary" data-close-dialog>Cancel</button><button class="admin-button" type="submit">Create team</button></div>
+  </form></dialog>
+  <dialog id="player-dialog" class="admin-dialog"><form id="player-form" class="admin-form">
+    <div class="admin-panel-head"><h2 class="admin-section-title">Add player to squad</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
+    <input type="hidden" name="team_id">
+    <div class="admin-form-grid">
+      <label class="span-2">Player name<input name="full_name" required maxlength="120"></label>
+      <label>Date of birth<input name="date_of_birth" type="date" required></label>
+      <label>Gender<select name="gender"><option value="">Prefer not to say</option><option>Male</option><option>Female</option></select></label>
+      <label>Jersey number<input name="jersey_no" type="number" min="1" max="99"></label>
+      <label>Position<input name="position" maxlength="60" placeholder="e.g. Scrum-half"></label>
+    </div>
+    <div class="admin-form-actions"><button type="button" class="admin-button-secondary" data-close-dialog>Cancel</button><button class="admin-button" type="submit">Add player</button></div>
+  </form></dialog>
+  <dialog id="registration-dialog" class="admin-dialog"><div class="admin-form">
+    <div class="admin-panel-head"><h2 class="admin-section-title">Player registration</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
+    <div id="registration-details" class="registration-details"></div>
+  </div></dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script>
+  <script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/admin-tools.js"></script><script src="js/teams-admin.js?v=registration-details"></script><script src="js/admin-fab-menu.js"></script>
+</body></html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D">
+  <title>Training · Serdang Eagles</title>
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/coach.css">
+  <link rel="stylesheet" href="css/coach-tools.css">
+  <link rel="stylesheet" href="css/bottom-nav.css">
+</head>
+<body>
+  <header class="app-header">
+    <a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a>
+    <div class="app-title"><div class="app-title-main">Coach workspace</div><div class="app-title-sub">Training calendar</div></div>
+    <button class="icon-btn" id="logout-btn" title="Sign out" aria-label="Sign out">↗</button>
+  </header>
+  <main class="app-main coach-tools-main">
+    <div class="dash-section">
+      <div class="dash-tag">Plan &amp; record</div>
+      <h1 class="dash-title">Training</h1>
+    </div>
+    <div id="page-message" class="coach-message" role="status" aria-live="polite" hidden></div>
+    <div id="team-picker-wrap" class="form-group" hidden><label for="team-picker">Team</label><select id="team-picker"></select></div>
+    <section id="team-empty" class="coach-empty-state" hidden>
+      <h2>No team assigned</h2><p>Ask an admin to assign a team to your coach account before scheduling or taking attendance.</p>
+    </section>
+    <div id="training-content" hidden>
+      <section class="coach-panel">
+        <div class="month-nav">
+          <button class="month-nav-btn" id="previous-month" aria-label="Previous month">‹</button>
+          <h2 class="month-label" id="month-label"></h2>
+          <button class="month-nav-btn" id="next-month" aria-label="Next month">›</button>
+        </div>
+        <div class="calendar">
+          <div class="calendar-days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+        <div class="coach-legend"><span><i class="training-dot"></i> Training</span><span><i class="match-dot"></i> Match</span></div>
+      </section>
+      <section class="dash-section coach-panel">
+        <div class="coach-panel-head">
+          <div><div class="dash-tag">Selected day</div><h2 class="coach-section-title" id="selected-date"></h2></div>
+          <button class="btn btn-primary coach-button" id="add-session">+ Session</button>
+        </div>
+        <div id="session-list" class="coach-list"></div>
+      </section>
+    </div>
+  </main>
+  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Coach navigation" hidden></nav>
+  <dialog id="session-dialog" class="coach-dialog">
+    <form id="session-form" class="coach-form">
+      <div class="coach-panel-head"><h2 class="coach-section-title">New training session</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div>
+      <label>Session title<input name="title" required maxlength="120" placeholder="e.g. Passing &amp; support lines"></label>
+      <label>Date and time<input name="starts_at" type="datetime-local" required></label>
+      <label>End time<input name="ends_at" type="datetime-local"></label>
+      <label>Venue<input name="venue" maxlength="160" placeholder="Training ground"></label>
+      <label>Syllabus / session notes<textarea name="description" rows="4" placeholder="Warm-up, skills, drills, and coaching points"></textarea></label>
+      <button class="btn btn-primary coach-button" type="submit">Save session</button>
+    </form>
+  </dialog>
+  <dialog id="attendance-dialog" class="coach-dialog">
+    <div class="coach-form"><div class="coach-panel-head"><h2 class="coach-section-title">Session attendance</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div><div id="attendance-form"></div></div>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/coach-tools.js"></script><script src="js/training.js"></script>
+</body>
+</html>

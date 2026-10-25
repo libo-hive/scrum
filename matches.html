@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D"><title>Matches · Serdang Eagles</title>
+  <link rel="icon" href="images/logo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/coach-tools.css"><link rel="stylesheet" href="css/bottom-nav.css">
+</head>
+<body>
+  <header class="app-header"><a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a><div class="app-title"><div class="app-title-main">Coach workspace</div><div class="app-title-sub">Fixtures &amp; results</div></div><button class="icon-btn" id="logout-btn" title="Sign out" aria-label="Sign out">↗</button></header>
+  <main class="app-main coach-tools-main">
+    <div class="dash-section"><div class="dash-tag">Fixtures &amp; results</div><h1 class="dash-title">Matches</h1></div>
+    <div id="page-message" class="coach-message" role="status" aria-live="polite" hidden></div>
+    <div id="team-picker-wrap" class="form-group" hidden><label for="team-picker">Team</label><select id="team-picker"></select></div>
+    <section id="team-empty" class="coach-empty-state" hidden><h2>No team assigned</h2><p>Ask an admin to assign a team to your coach account before managing fixtures.</p></section>
+    <div id="match-content" hidden>
+      <div class="coach-panel-head match-actions"><div class="segment-row"><button class="segment-btn active" data-filter="upcoming">Upcoming</button><button class="segment-btn" data-filter="past">Past results</button></div><button class="btn btn-primary coach-button" id="add-match">+ Fixture</button></div>
+      <div id="match-list" class="coach-list"></div>
+    </div>
+  </main>
+  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Coach navigation" hidden></nav>
+  <dialog id="match-dialog" class="coach-dialog">
+    <form id="match-form" class="coach-form"><div class="coach-panel-head"><h2 class="coach-section-title">New fixture</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div>
+      <label>Opponent<input name="opponent" required maxlength="120" placeholder="Team name"></label>
+      <label>Kick-off<input name="starts_at" type="datetime-local" required></label>
+      <label>Venue<input name="venue" maxlength="160" placeholder="Ground"></label>
+      <label>Home / away<select name="side"><option value="home">Home</option><option value="away">Away</option></select></label>
+      <button class="btn btn-primary coach-button" type="submit">Save fixture</button>
+    </form>
+  </dialog>
+  <dialog id="result-dialog" class="coach-dialog">
+    <form id="result-form" class="coach-form"><div class="coach-panel-head"><h2 class="coach-section-title">Record result</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div>
+      <p id="result-match-label" class="coach-muted"></p><label>Serdang Eagles score<input name="home_score" type="number" min="0" max="999" required></label><label>Opponent score<input name="away_score" type="number" min="0" max="999" required></label>
+      <button class="btn btn-primary coach-button" type="submit">Save result</button>
+    </form>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/coach-tools.js"></script><script src="js/matches.js"></script>
+</body>
+</html>

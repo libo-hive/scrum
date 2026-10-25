@@ -33,19 +33,24 @@ loginForm.addEventListener('submit', async (e) => {
     // 2. Check account_status dalam table 'profiles'
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('account_status')
+      .select('account_status, onboarding_done')
       .eq('id', authData.user.id)
       .single();
 
     if (profileError) {
       // Jika profil gagal dibaca, pastikan sesi dibatalkan
+      console.error('Profile lookup failed:', profileError);
       await supabase.auth.signOut();
-      throw new Error('Gagal mendapatkan maklumat profil pengguna.');
+      throw new Error(`Gagal mendapatkan maklumat profil (${profileError.code || 'unknown'}): ${profileError.message}`);
     }
 
     // 3. Redirect / Batalkan sesi berdasarkan status
     switch (profile.account_status) {
       case 'active':
+        if (!profile.onboarding_done) {
+          window.location.href = 'onboarding.html';
+          break;
+        }
         window.location.href = 'dashboard.html';
         break;
         

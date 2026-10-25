@@ -1,0 +1,76 @@
+.coach-tools-main [hidden],
+.coach-tools-main .form-group[hidden] {
+  display: none !important;
+}
+
+.coach-tools-main { padding-bottom: 112px; }
+.coach-panel { margin: 18px 0 26px; }
+.coach-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.coach-section-title { margin: 0 0 16px; font-family: var(--font-h); font-size: 1.25rem; text-transform: uppercase; }
+.coach-message { margin: 12px 0; padding: 12px 14px; border-radius: 10px; background: rgba(34,197,94,.12); color: var(--good); }
+.coach-message.is-error { background: rgba(239,68,68,.12); color: var(--bad); }
+.coach-empty-state { padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--gray); line-height: 1.55; }
+.coach-empty-state h2 { margin-bottom: 8px; color: var(--white); font-family: var(--font-h); text-transform: uppercase; }
+.coach-empty-state p { margin: 0; }
+.coach-list { display: grid; gap: 10px; }
+.coach-list-row,.coach-event-card,.coach-match-card { display: flex; align-items: center; gap: 13px; padding: 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
+.coach-row-main { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 5px; }
+.coach-row-main strong { overflow: hidden; text-overflow: ellipsis; }
+.coach-row-main span,.coach-muted { color: var(--gray); font-size: .78rem; }
+.player-number { min-width: 42px; color: var(--orange); font-family: var(--font-h); font-size: 1.1rem; }
+.player-stats { display: flex; gap: 12px; text-align: right; }
+.player-stats span,.fitness-result { display: flex; flex-direction: column; font-weight: 700; }
+.player-stats small,.fitness-result small { color: var(--gray); font-size: .6rem; font-weight: 500; text-transform: uppercase; }
+.fitness-result { align-items: flex-end; gap: 4px; }
+.squad-toolbar { margin: 12px 0; }
+.coach-button { padding: 12px 16px; border: 0; border-radius: 10px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.coach-button:disabled { opacity: .55; }
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin: 0 0 14px; }
+.month-label { margin: 0; font-family: var(--font-h); font-size: 1.25rem; text-transform: uppercase; }
+.month-nav-btn { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--white); font-size: 1.6rem; cursor: pointer; }
+.calendar { padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.calendar-days,.calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 5px; }
+.calendar-days { margin-bottom: 8px; color: var(--gray); font-size: .64rem; text-align: center; text-transform: uppercase; }
+.cal-day { min-height: 42px; padding: 6px 2px; border: 1px solid transparent; border-radius: 8px; background: var(--surface-2); color: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+button.cal-day { cursor: pointer; }
+.cal-day.selected { border-color: var(--orange); background: rgba(217,123,58,.18); }
+.cal-day.is-empty { background: transparent; }
+.cal-day-dots { min-height: 6px; display: flex; gap: 3px; }
+.training-dot,.match-dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #2DB87A; }
+.match-dot { background: #E05040; }
+.coach-legend { display: flex; gap: 18px; padding: 12px 4px 0; color: var(--gray); font-size: .72rem; }
+.coach-legend span { display: flex; align-items: center; gap: 6px; }
+.coach-event-card { align-items: flex-start; }
+.coach-event-time { display: flex; min-width: 78px; flex-direction: column; gap: 5px; color: var(--gray); font-size: .7rem; }
+.event-type { width: fit-content; padding: 3px 7px; border-radius: 5px; background: rgba(45,184,122,.15); color: #2DB87A; font-size: .6rem; font-weight: 800; text-transform: uppercase; }
+.event-type.match { background: rgba(224,80,64,.15); color: #E05040; }
+.event-syllabus { margin: 5px 0 0; color: var(--gray); font-size: .78rem; white-space: pre-wrap; }
+.btn-outline { padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--white); cursor: pointer; }
+.attendance-button { font-size: .7rem; }
+.coach-dialog { width: min(94vw,540px); max-height: 86vh; padding: 0; overflow: auto; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--white); }
+.coach-dialog::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(3px); }
+.coach-form { display: grid; gap: 14px; padding: 20px; }
+.coach-form label,.form-group { display: grid; gap: 7px; color: var(--gray); font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+.coach-form input,.coach-form textarea,.coach-form select,.form-group select,.attendance-row select { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #101010; color: var(--white); font: inherit; }
+.coach-form textarea { resize: vertical; }
+.sheet-close { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--white); font-size: 1.2rem; cursor: pointer; }
+.attendance-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--white) !important; text-transform: none !important; }
+.attendance-row select { max-width: 180px; text-transform: capitalize; }
+.match-actions { margin: 12px 0 18px; }
+.segment-row { display: flex; gap: 8px; }
+.segment-btn { padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--gray); cursor: pointer; }
+.segment-btn.active { background: var(--orange); color: var(--black); }
+.coach-match-card { align-items: center; flex-wrap: wrap; }
+.match-opponent { display: flex; flex: 1; min-width: 140px; flex-direction: column; gap: 4px; }
+.match-opponent small,.match-opponent span { color: var(--gray); font-size: .7rem; }
+.match-opponent strong { font-size: 1.05rem; }
+.match-final-score { display: grid; grid-template-columns: auto auto auto; gap: 6px; align-items: center; text-align: center; font-family: var(--font-h); font-size: 1.4rem; }
+.match-final-score span,.match-final-score small { color: var(--gray); }
+.match-final-score small { grid-column: 1 / -1; font: 600 .58rem var(--font-b); text-transform: uppercase; }
+.coach-match-card .result-button { margin-left: auto; }
+@media (max-width: 480px) {
+  .coach-list-row,.coach-event-card { gap: 8px; padding: 11px; }
+  .player-stats { gap: 7px; }
+  .coach-event-time { min-width: 62px; }
+  .match-actions { align-items: flex-start; }
+}

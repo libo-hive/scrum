@@ -4,30 +4,38 @@
 
 -- Helper functions
 create or replace function current_club_id() returns uuid
-language sql stable as $$
-  select club_id from profiles where id = auth.uid()
+language sql stable security definer
+set search_path = ''
+as $$
+  select club_id from public.profiles where id = auth.uid()
 $$;
 
 create or replace function is_active() returns boolean
-language sql stable as $$
+language sql stable security definer
+set search_path = ''
+as $$
   select coalesce(
     (select account_status = 'active' and onboarding_done
-     from profiles where id = auth.uid()),
+     from public.profiles where id = auth.uid()),
     false)
 $$;
 
 create or replace function has_role(p_role user_role) returns boolean
-language sql stable as $$
+language sql stable security definer
+set search_path = ''
+as $$
   select exists(
-    select 1 from user_roles
+    select 1 from public.user_roles
     where user_id = auth.uid() and role = p_role
   )
 $$;
 
 create or replace function has_any_role(p_roles user_role[]) returns boolean
-language sql stable as $$
+language sql stable security definer
+set search_path = ''
+as $$
   select exists(
-    select 1 from user_roles
+    select 1 from public.user_roles
     where user_id = auth.uid() and role = any(p_roles)
   )
 $$;
