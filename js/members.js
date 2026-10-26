@@ -11,8 +11,12 @@
   const message = document.getElementById('pageMessage');
   const pendingElement = document.getElementById('pendingMembers');
   const invitationsElement = document.getElementById('invitationList');
+  const directoryElement = document.getElementById('memberDirectoryList');
   let activeClubId;
   let invitePlayers = [];
+  let directoryEntries = [];
+  let parentAccounts = [];
+  let activeDirectoryCategory = 'all';
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, character =>
@@ -65,13 +69,16 @@
     }
     activeClubId = profile.club_id;
     document.getElementById('membersMain').hidden = false;
-    window.BottomNav.render('admin');
-    await loadInvitePlayers();
-    await refreshLists();
+    bindDirectoryControls();
     document.getElementById('inviteRole').addEventListener('change', updateParentInviteFields);
     updateParentInviteFields();
     const floatingMenu = document.getElementById('admin-fab-menu');
     if (floatingMenu) floatingMenu.hidden = false;
+    await Promise.all([
+      loadInvitePlayers(),
+      refreshLists(),
+      loadDirectory().catch(showDirectoryUnavailable)
+    ]);
     const params = new URLSearchParams(window.location.search);
     if (params.get('quick') === 'create-parent-invite') {
       const roleSelect = document.getElementById('inviteRole');
@@ -88,44 +95,329 @@
       roleSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
       roleSelect.focus({ preventScroll: true });
     }
+  }
 
-    async function loadInvitePlayers() {
-      const { data, error } = await supabase.from('team_members')
-        .select('player_id, players!inner(id, full_name, date_of_birth), teams!inner(name, age_category)')
-        .eq('teams.club_id', activeClubId)
-        .is('left_at', null)
-        .eq('status', 'active');
-      if (error) throw error;
-      const playerMap = new Map();
-      for (const row of data || []) {
-        const player = row.players;
-        if (!player) continue;
-        const existing = playerMap.get(player.id) || { ...player, categories: [] };
-        const category = row.teams?.age_category || row.teams?.name;
-        if (category && !existing.categories.includes(category)) existing.categories.push(category);
-        playerMap.set(player.id, existing);
-      }
-      invitePlayers = [...playerMap.values()].sort((a, b) => a.full_name.localeCompare(b.full_name));
-      const select = document.getElementById('invitePlayer');
-      select.innerHTML = '<option value="">Select a player</option>' + invitePlayers.map(player =>
-        `<option value="${escapeHtml(player.id)}">${escapeHtml(player.full_name)}${player.categories.length ? ` · ${escapeHtml(player.categories.join(', '))}` : ''}${player.date_of_birth ? ` · ${escapeHtml(player.date_of_birth)}` : ''}</option>`
-      ).join('');
-      select.disabled = invitePlayers.length === 0;
-      document.querySelector('#invitePlayerGroup .form-hint').textContent = invitePlayers.length
-        ? 'The parent will only see the player linked to this invitation.'
-        : 'No roster players found. Add the junior to a squad before creating a parent invitation.';
-      updateParentInviteFields();
+  function bindDirectoryControls() {
+    document.getElementById('addPlayerButton').addEventListener('click', openPlayerDialog);
+    document.getElementById('closePlayerDialog').addEventListener('click', closePlayerDialog);
+    document.getElementById('cancelPlayerDialog').addEventListener('click', closePlayerDialog);
+    document.getElementById('addPlayerForm').addEventListener('submit', savePlayerRecord);
+    document.querySelector('#addPlayerForm [name="date_of_birth"]').addEventListener('input', updatePlayerAge);
+    document.getElementById('closeLinkParentDialog').addEventListener('click', closeParentLinkDialog);
+    document.getElementById('cancelLinkParentDialog').addEventListener('click', closeParentLinkDialog);
+    document.getElementById('linkParentForm').addEventListener('submit', saveParentLink);
+    directoryElement.addEventListener('click', event => {
+      const button = event.target.closest('[data-link-player]');
+      if (button) openParentLinkDialog(button.dataset.linkPlayer, button.dataset.playerName);
+    });
+    document.getElementById('directorySearch').addEventListener('input', renderDirectory);
+    document.getElementById('directoryFilters').addEventListener('click', event => {
+      const filter = event.target.closest('[data-category]');
+      if (!filter) return;
+      activeDirectoryCategory = filter.dataset.category;
+      document.querySelectorAll('.directory-filter').forEach(button => {
+        const active = button === filter;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      renderDirectory();
+    });
+    document.addEventListener('admin-fab-action', event => {
+      if (event.detail?.action === 'create-player') openPlayerDialog();
+    });
+  }
+
+  async function loadInvitePlayers() {
+    const { data, error } = await supabase.from('players')
+      .select('id, full_name, date_of_birth, team_members(status, left_at, teams(name, age_category))')
+      .eq('club_id', activeClubId)
+      .is('deleted_at', null)
+      .order('full_name');
+    if (error) throw error;
+    invitePlayers = (data || []).map(player => {
+      const categories = [...new Set((player.team_members || [])
+        .filter(membership => !membership.left_at && membership.status === 'active')
+        .map(membership => membership.teams?.age_category || membership.teams?.name)
+        .filter(Boolean))];
+      const category = categories.join(', ');
+      return { ...player, categories: category ? [category] : [] };
+    });
+    const select = document.getElementById('invitePlayer');
+    select.innerHTML = '<option value="">Select a player</option>' + invitePlayers.map(player =>
+      `<option value="${escapeHtml(player.id)}">${escapeHtml(player.full_name)}${player.categories.length ? ` · ${escapeHtml(player.categories.join(', '))}` : ''}${player.date_of_birth ? ` · ${escapeHtml(player.date_of_birth)}` : ''}</option>`
+    ).join('');
+    select.disabled = invitePlayers.length === 0;
+    document.querySelector('#invitePlayerGroup .form-hint').textContent = invitePlayers.length
+      ? 'The parent will only see the player linked to this invitation. Team assignment is not required.'
+      : 'Add a player record first to create a parent invitation.';
+    updateParentInviteFields();
+  }
+
+  function showDirectoryUnavailable(error) {
+    console.error('Member directory failed to load:', error);
+    const text = error.code === '42703'
+      ? 'The member directory database update is not applied yet. Apply migration 20261026073000_admin_member_directory.sql, then reload this page.'
+      : error.message || 'Could not load the club member directory.';
+    directoryElement.innerHTML = `<div class="member-empty">${escapeHtml(text)}</div>`;
+    document.getElementById('directoryCount').textContent = '—';
+  }
+
+  function updateParentInviteFields() {
+    const isParent = document.getElementById('inviteRole').value === 'parent';
+    const group = document.getElementById('invitePlayerGroup');
+    const select = document.getElementById('invitePlayer');
+    const email = document.getElementById('inviteEmail');
+    group.hidden = !isParent;
+    select.required = isParent;
+    email.required = isParent;
+    document.getElementById('inviteEmailHint').textContent = isParent ? '(required for parent account)' : '(optional)';
+  }
+
+  async function loadDirectory() {
+    const [profileResult, playerResult, accountResult] = await Promise.all([
+      supabase.from('profiles')
+        .select('id, full_name, email, phone, account_status, onboarding_done, user_roles(role)')
+        .eq('club_id', activeClubId)
+        .is('deleted_at', null)
+        .order('full_name'),
+      supabase.from('players')
+        .select('id, full_name, nickname, email, phone, date_of_birth, membership_status, player_registration_details(category), team_members(status, left_at, teams(name, age_category))')
+        .eq('club_id', activeClubId)
+        .is('deleted_at', null)
+        .order('full_name'),
+      supabase.from('player_accounts').select('player_id, user_id')
+    ]);
+    for (const result of [profileResult, playerResult, accountResult]) {
+      if (result.error) throw result.error;
+    }
+    const profileById = new Map((profileResult.data || []).map(profile => [profile.id, profile]));
+    parentAccounts = (profileResult.data || []).filter(profile =>
+      profile.account_status === 'active' &&
+      profile.onboarding_done &&
+      (profile.user_roles || []).some(({ role }) => role === 'parent')
+    );
+    const accountByPlayer = new Map((accountResult.data || []).map(account => [account.player_id, account.user_id]));
+    const linkedUsers = new Set(accountByPlayer.values());
+    const players = (playerResult.data || []).map(player => {
+      const teams = (player.team_members || [])
+        .filter(membership => !membership.left_at && membership.status === 'active')
+        .map(membership => membership.teams)
+        .filter(Boolean);
+      const categories = [...new Set(teams.map(team => team.age_category || team.name).filter(Boolean))];
+      const category = player.player_registration_details?.category || categories.join(', ') || 'Category not set';
+      const userId = accountByPlayer.get(player.id);
+      const account = userId ? profileById.get(userId) : null;
+      return {
+        id: player.id,
+        type: 'player',
+        category: 'players',
+        name: player.full_name,
+        subtitle: [category, player.nickname ? `“${player.nickname}”` : ''].filter(Boolean).join(' · '),
+        email: account?.email || player.email || '',
+        phone: account?.phone || player.phone || '',
+        status: account ? 'Login linked' : 'Record only',
+        statusClass: account ? 'is-linked' : '',
+        searchText: `${player.full_name} ${category} ${player.nickname || ''} ${account?.email || player.email || ''} ${account?.phone || player.phone || ''}`
+      };
+    });
+
+    const accountMembers = (profileResult.data || []).filter(profile => {
+      const roles = (profile.user_roles || []).map(item => item.role);
+      return roles.some(role => !['adult_player', 'junior_player'].includes(role)) || !linkedUsers.has(profile.id);
+    }).map(profile => {
+      const roles = (profile.user_roles || []).map(item => item.role);
+      const category = memberCategory(roles);
+      const roleLabel = roles.map(role => roleNames[role] || role).join(' · ') || 'Member';
+      return {
+        id: profile.id,
+        type: 'account',
+        category,
+        name: profile.full_name,
+        subtitle: roleLabel,
+        email: profile.email || '',
+        phone: profile.phone || '',
+        status: accountStatusLabel(profile.account_status),
+        statusClass: profile.account_status === 'active' ? 'is-active' : '',
+        searchText: `${profile.full_name} ${roleLabel} ${profile.email || ''} ${profile.phone || ''} ${profile.account_status || ''}`
+      };
+    });
+
+    directoryEntries = [...players, ...accountMembers].sort((a, b) => a.name.localeCompare(b.name));
+    renderDirectory();
+  }
+
+  function memberCategory(roles) {
+    if (roles.some(role => ['head_coach', 'coach', 'assistant_coach'].includes(role))) return 'coaches';
+    if (roles.some(role => ['admin', 'manager', 'finance', 'medic', 'kit_man', 'volunteer'].includes(role))) return 'staff';
+    if (roles.includes('parent')) return 'parents';
+    if (roles.some(role => ['adult_player', 'junior_player'].includes(role))) return 'players';
+    return 'other';
+  }
+
+  function accountStatusLabel(status) {
+    return ({
+      active: 'Active',
+      pending_approval: 'Pending approval',
+      approved_pending_profile: 'Profile setup',
+      suspended: 'Suspended',
+      rejected: 'Rejected'
+    })[status] || status || 'Member';
+  }
+
+  function renderDirectory() {
+    const search = document.getElementById('directorySearch').value.trim().toLowerCase();
+    const visible = directoryEntries.filter(entry =>
+      (activeDirectoryCategory === 'all' || entry.category === activeDirectoryCategory) &&
+      (!search || entry.searchText.toLowerCase().includes(search))
+    );
+    document.getElementById('directoryCount').textContent = String(visible.length);
+    if (!visible.length) {
+      directoryElement.innerHTML = `<div class="member-empty">${directoryEntries.length
+        ? 'No members match this category or search.'
+        : 'No player records or member accounts found yet.'}</div>`;
+      return;
     }
 
-    function updateParentInviteFields() {
-      const isParent = document.getElementById('inviteRole').value === 'parent';
-      const group = document.getElementById('invitePlayerGroup');
-      const select = document.getElementById('invitePlayer');
-      const email = document.getElementById('inviteEmail');
-      group.hidden = !isParent;
-      select.required = isParent;
-      email.required = isParent;
-      document.getElementById('inviteEmailHint').textContent = isParent ? '(required for parent account)' : '(optional)';
+    const categories = [
+      ['players', 'Players'],
+      ['coaches', 'Coaches'],
+      ['staff', 'Club staff'],
+      ['parents', 'Parents / guardians'],
+      ['other', 'Other members']
+    ];
+    const groups = activeDirectoryCategory === 'all'
+      ? categories.map(([key, label]) => [label, visible.filter(item => item.category === key)]).filter(([, items]) => items.length)
+      : [[categoryLabel(activeDirectoryCategory), visible]];
+    directoryElement.innerHTML = groups.map(([label, items]) =>
+      `<div class="member-category-label">${escapeHtml(label)}</div>${items.map(renderDirectoryEntry).join('')}`
+    ).join('');
+  }
+
+  function categoryLabel(category) {
+    return ({
+      players: 'Players',
+      coaches: 'Coaches',
+      staff: 'Club staff',
+      parents: 'Parents / guardians',
+      other: 'Other members'
+    })[category] || 'Members';
+  }
+
+  function renderDirectoryEntry(entry) {
+    return `<article class="member-row">
+      <div class="member-avatar">${escapeHtml(initials(entry.name))}</div>
+      <div class="member-row-main">
+        <div class="member-row-name">${escapeHtml(entry.name)}</div>
+        <div class="member-row-meta">${escapeHtml(entry.subtitle)}</div>
+        <div class="member-row-meta">${escapeHtml([entry.email, entry.phone].filter(Boolean).join(' · ') || 'Contact details not provided')}</div>
+        <span class="member-row-status ${entry.statusClass}">${escapeHtml(entry.status)}</span>
+      </div>
+      ${entry.type === 'player' ? `<div class="member-row-actions"><button class="member-action approve-action" type="button" data-link-player="${escapeHtml(entry.id)}" data-player-name="${escapeHtml(entry.name)}">Link to parent</button></div>` : ''}
+    </article>`;
+  }
+
+  function openParentLinkDialog(playerId, playerName) {
+    const select = document.getElementById('linkParentAccount');
+    const submit = document.getElementById('saveParentLink');
+    const hint = document.getElementById('linkParentHint');
+    select.innerHTML = '<option value="">Select a parent account</option>' + parentAccounts.map(parent =>
+      `<option value="${escapeHtml(parent.id)}">${escapeHtml(parent.full_name)}${parent.email ? ` · ${escapeHtml(parent.email)}` : ''}</option>`
+    ).join('');
+    select.disabled = parentAccounts.length === 0;
+    submit.disabled = parentAccounts.length === 0;
+    hint.textContent = parentAccounts.length
+      ? 'Only active parent accounts that completed onboarding are listed.'
+      : 'There are no active parent accounts yet. Invite and approve a parent first.';
+    document.getElementById('linkParentPlayerId').value = playerId;
+    document.getElementById('linkParentPlayer').value = playerName;
+    document.getElementById('linkParentDialog').showModal();
+  }
+
+  function closeParentLinkDialog() {
+    document.getElementById('linkParentDialog').close();
+  }
+
+  async function saveParentLink(event) {
+    event.preventDefault();
+    const submit = document.getElementById('saveParentLink');
+    const playerId = document.getElementById('linkParentPlayerId').value;
+    const parentUserId = document.getElementById('linkParentAccount').value;
+    if (!playerId || !parentUserId) return;
+    submit.disabled = true;
+    submit.textContent = 'Linking…';
+    try {
+      const { error } = await supabase.rpc('link_player_to_parent', {
+        p_player_id: playerId,
+        p_parent_user_id: parentUserId
+      });
+      if (error) throw error;
+      closeParentLinkDialog();
+      showMessage('Player linked to the parent account. Their dashboard will now include this player.', false);
+      try {
+        await loadDirectory();
+      } catch (refreshError) {
+        console.error('Refreshing the member directory after linking failed:', refreshError);
+        showMessage('Player linked, but the directory could not refresh. Reload the page to see the update.', true);
+      }
+    } catch (error) {
+      console.error('Linking player to parent failed:', error);
+      showMessage(error.message || 'Could not link this player to the parent account.', true);
+    } finally {
+      submit.disabled = parentAccounts.length === 0;
+      submit.textContent = 'Link player';
+    }
+  }
+
+  function openPlayerDialog() {
+    const form = document.getElementById('addPlayerForm');
+    form.reset();
+    updatePlayerAge();
+    document.getElementById('addPlayerDialog').showModal();
+  }
+
+  function updatePlayerAge() {
+    const value = document.querySelector('#addPlayerForm [name="date_of_birth"]').value;
+    document.getElementById('playerAgeThisYear').textContent = value
+      ? String(new Date().getFullYear() - new Date(`${value}T00:00:00`).getFullYear())
+      : '—';
+  }
+
+  function closePlayerDialog() {
+    document.getElementById('addPlayerDialog').close();
+  }
+
+  async function savePlayerRecord(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const submit = form.querySelector('[type="submit"]');
+    const values = new FormData(form);
+    const details = Object.fromEntries(values.entries());
+    for (const field of ['height_cm', 'weight_kg']) {
+      details[field] = details[field] ? Number(details[field]) : null;
+    }
+    for (const field of ['email', 'primary_guardian_email', 'secondary_guardian_name',
+      'secondary_guardian_relationship', 'secondary_guardian_phone', 'nickname', 'phone', 'medical_conditions']) {
+      details[field] = String(details[field] || '').trim() || null;
+    }
+    for (const field of ['full_name', 'category', 'identity_document', 'date_of_birth', 'address',
+      'primary_guardian_name', 'primary_guardian_identity_document', 'primary_guardian_phone',
+      'primary_guardian_relationship', 'primary_guardian_address']) {
+      details[field] = String(details[field] || '').trim();
+    }
+    submit.disabled = true;
+    submit.textContent = 'Saving…';
+    try {
+      const { error } = await supabase.rpc('create_manual_player_record', { p_details: details });
+      if (error) throw error;
+      closePlayerDialog();
+      showMessage('Player record saved. No team or login account was created.', false);
+      await Promise.all([loadDirectory(), loadInvitePlayers()]);
+    } catch (error) {
+      console.error('Manual player record creation failed:', error);
+      showMessage(error.message || 'Could not save the player record.', true);
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Save player record';
     }
   }
 
@@ -205,7 +497,7 @@
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError) throw authError;
       if (role === 'parent' && (!email || !playerId)) {
-        throw new Error('For a parent invitation, enter the parent email and select their player from the roster.');
+        throw new Error('For a parent invitation, enter the parent email and select their player record.');
       }
       const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase.from('invitations').insert({
@@ -285,7 +577,7 @@
   });
 
   document.getElementById('refreshMembers').addEventListener('click', () => {
-    refreshLists().catch(error => {
+    Promise.all([refreshLists(), loadDirectory().catch(showDirectoryUnavailable)]).catch(error => {
       console.error('Refreshing member data failed:', error);
       showMessage(error.message || 'Could not refresh member data.', true);
     });

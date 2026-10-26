@@ -40,7 +40,8 @@
       window.location.replace('dashboard.html');
       return null;
     }
-    window.BottomNav.render('coach');
+    const quickActions = document.getElementById('admin-fab-menu');
+    if (quickActions) quickActions.hidden = false;
 
     let teamsQuery = window.supabase.from('teams')
       .select('id, name, age_category, coach_id')

@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/coach.css">
   <link rel="stylesheet" href="css/coach-tools.css">
-  <link rel="stylesheet" href="css/bottom-nav.css">
+  <link rel="stylesheet" href="css/fab.css">
 </head>
 <body>
   <header class="app-header">
@@ -50,7 +50,7 @@
       </section>
     </div>
   </main>
-  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Coach navigation" hidden></nav>
+  <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="coach-training" hidden></div>
   <dialog id="session-dialog" class="coach-dialog">
     <form id="session-form" class="coach-form">
       <div class="coach-panel-head"><h2 class="coach-section-title">New training session</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div>
@@ -66,6 +66,6 @@
     <div class="coach-form"><div class="coach-panel-head"><h2 class="coach-section-title">Session attendance</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div><div id="attendance-form"></div></div>
   </dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/coach-tools.js"></script><script src="js/training.js"></script>
+  <script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/coach-tools.js"></script><script src="js/training.js"></script><script src="js/admin-fab-menu.js"></script>
 </body>
 </html>

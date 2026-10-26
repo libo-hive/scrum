@@ -20,7 +20,11 @@
       document.getElementById('next-month').addEventListener('click', () => shiftMonth(1));
       document.getElementById('add-session').addEventListener('click', openSessionDialog);
       document.getElementById('session-form').addEventListener('submit', saveSession);
+      document.addEventListener('admin-fab-action', event => {
+        if (event.detail?.action === 'create-session') openSessionDialog();
+      });
       loadEvents().catch(showError);
+      if (new URLSearchParams(window.location.search).get('quick') === 'create-session') openSessionDialog();
     }).catch(showError);
   });
 

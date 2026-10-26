@@ -11,6 +11,8 @@
     ],
     members: [
       { label: 'Create an invitation', icon: '+', action: 'scroll', target: '#inviteRole', focus: true },
+      { label: 'Add a player record', icon: 'P', action: 'dispatch', key: 'create-player' },
+      { label: 'View all members', icon: 'M', action: 'scroll', target: '#memberDirectory' },
       { label: 'Review applications', icon: '✓', action: 'scroll', target: '#pendingMembers' },
       { label: 'Recent invitation links', icon: '↗', action: 'scroll', target: '#invitationList' }
     ],
@@ -24,14 +26,71 @@
       { label: 'This month’s events', icon: '↗', action: 'scroll', target: '#event-list' }
     ],
     finance: [
-      { label: 'Create an invoice', icon: '+', action: 'dispatch', key: 'create-invoice' },
+      { label: 'Create an invoice', icon: '+', href: 'finance.html?quick=create-invoice' },
+      { label: 'Receive sponsorship / grant', icon: '+', href: 'finance.html?quick=receive-funds' },
+      { label: 'Record an expense', icon: '−', href: 'finance.html?quick=record-expense' },
       { label: 'View invoices', icon: 'RM', action: 'scroll', target: '#invoice-list' },
       { label: 'Recent payments', icon: '$', action: 'scroll', target: '#payment-list' }
+    ],
+    'finance-dashboard': [
+      { label: 'Open invoices & payments', icon: 'RM', href: 'finance.html' },
+      { label: 'Create an invoice', icon: '+', href: 'finance.html?quick=create-invoice' },
+      { label: 'Receive sponsorship / grant', icon: '+', href: 'finance.html?quick=receive-funds' },
+      { label: 'Record an expense', icon: '−', href: 'finance.html?quick=record-expense' },
+      { label: 'Outstanding invoices', icon: '!', action: 'scroll', target: '#finance-outstanding-list' },
+      { label: 'Recent payments', icon: '$', action: 'scroll', target: '#finance-recent-payments' }
     ],
     more: [
       { label: 'Publish announcement', icon: '+', action: 'dispatch', key: 'create-announcement' },
       { label: 'Club profile', icon: 'C', action: 'scroll', target: '#club-settings' },
       { label: 'Quick links', icon: '↗', action: 'scroll', target: '#quick-links' }
+    ],
+    'coach-dashboard': [
+      { label: 'View squad', icon: 'S', href: 'squad.html' },
+      { label: 'Plan training', icon: 'T', href: 'training.html?quick=create-session' },
+      { label: 'Add a fixture', icon: 'M', href: 'matches.html?quick=create-match' }
+    ],
+    'coach-squad': [
+      { label: 'View roster', icon: 'S', action: 'scroll', target: '#player-list' },
+      { label: 'Training calendar', icon: 'T', href: 'training.html' },
+      { label: 'Matches', icon: 'M', href: 'matches.html' }
+    ],
+    'coach-training': [
+      { label: 'Add a training session', icon: '+', action: 'dispatch', key: 'create-session' },
+      { label: 'Go to selected day', icon: 'T', action: 'scroll', target: '#session-list' }
+    ],
+    'coach-matches': [
+      { label: 'Create a fixture', icon: '+', action: 'dispatch', key: 'create-match' },
+      { label: 'Past results', icon: 'R', action: 'click', target: '.segment-btn[data-filter="past"]' },
+      { label: 'Upcoming fixtures', icon: 'M', action: 'click', target: '.segment-btn[data-filter="upcoming"]' }
+    ],
+    player: [
+      { label: 'Upcoming sessions & matches', icon: 'S', action: 'scroll', target: '#member-upcoming-list' },
+      { label: 'Attendance & results', icon: 'A', action: 'scroll', target: '#member-activity-list' },
+      { label: 'Invoices', icon: 'I', action: 'scroll', target: '#member-invoice-list' }
+    ]
+  };
+  const navigation = {
+    admin: [
+      { label: 'Dashboard', icon: 'H', href: 'dashboard.html' },
+      { label: 'Members', icon: 'M', href: 'members.html' },
+      { label: 'Teams', icon: 'T', href: 'teams.html' },
+      { label: 'Events', icon: 'E', href: 'events.html' },
+      { label: 'Finance', icon: 'F', href: 'finance.html' },
+      { label: 'More', icon: '…', href: 'more.html' }
+    ],
+    coach: [
+      { label: 'Dashboard', icon: 'H', href: 'dashboard.html' },
+      { label: 'Squad', icon: 'S', href: 'squad.html' },
+      { label: 'Training', icon: 'T', href: 'training.html' },
+      { label: 'Matches', icon: 'M', href: 'matches.html' }
+    ],
+    member: [
+      { label: 'Dashboard', icon: 'H', href: 'dashboard.html' }
+    ],
+    finance: [
+      { label: 'Dashboard', icon: 'H', href: 'dashboard.html' },
+      { label: 'Invoices & payments', icon: 'F', href: 'finance.html' }
     ]
   };
 
@@ -43,12 +102,27 @@
     const page = container.dataset.fabMenu;
     const actions = menus[page];
     if (!actions) {
-      console.error(`Unknown admin floating menu: ${page}`);
+      console.error(`Unknown quick actions menu: ${page}`);
       return;
     }
+    const navItems = page.startsWith('coach-') ? navigation.coach
+      : page === 'player' ? navigation.member
+        : page === 'finance-dashboard' || page === 'finance' ? navigation.finance : navigation.admin;
+    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    const navMarkup = navItems.map(item => {
+      const current = currentPage === item.href ? ' is-current' : '';
+      const currentAttr = current ? ' aria-current="page"' : '';
+      return `<a class="admin-fab-action${current}" href="${item.href}"${currentAttr}>
+        <span class="admin-fab-action-icon" aria-hidden="true">${escape(item.icon)}</span>
+        <span>${escape(item.label)}</span>
+      </a>`;
+    }).join('');
 
     container.innerHTML = `
-      <div class="admin-fab-actions" id="admin-fab-actions" role="group" aria-label="Quick actions" aria-hidden="true">
+      <div class="admin-fab-actions" id="quick-actions-${escape(page)}" role="group" aria-label="Navigation and quick actions" aria-hidden="true">
+        <div class="admin-fab-heading">Navigation</div>
+        ${navMarkup}
+        ${actions.length ? '<div class="admin-fab-heading admin-fab-heading-actions">Quick actions</div>' : ''}
         ${actions.map(item => {
           const tag = item.href ? 'a' : 'button';
           const attrs = item.href
@@ -60,8 +134,9 @@
           </${tag}>`;
         }).join('')}
       </div>
-      <button class="admin-fab-trigger" type="button" aria-label="Open quick actions" aria-expanded="false" aria-controls="admin-fab-actions" title="Quick actions">
+      <button class="admin-fab-trigger" type="button" aria-label="Open navigation and quick actions" aria-expanded="false" aria-controls="quick-actions-${escape(page)}" title="Navigation and quick actions">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Menu</span>
       </button>`;
 
     const trigger = container.querySelector('.admin-fab-trigger');
@@ -70,15 +145,17 @@
     const close = () => {
       container.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
+      trigger.setAttribute('aria-label', 'Open navigation and quick actions');
       actionPanel.setAttribute('aria-hidden', 'true');
       actionPanel.inert = true;
     };
     trigger.addEventListener('click', () => {
       const isOpen = container.classList.toggle('is-open');
       trigger.setAttribute('aria-expanded', String(isOpen));
+      trigger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open navigation and quick actions');
       actionPanel.setAttribute('aria-hidden', String(!isOpen));
       actionPanel.inert = !isOpen;
-      if (isOpen) container.querySelector('.admin-fab-action')?.focus();
+      if (isOpen) actionPanel.querySelector('.admin-fab-action')?.focus();
     });
     container.addEventListener('click', event => {
       const item = event.target.closest('.admin-fab-action');

@@ -30,6 +30,7 @@
     });
     document.getElementById('team-form').addEventListener('submit', createTeam);
     document.getElementById('player-form').addEventListener('submit', createPlayer);
+    document.getElementById('existing-player-form').addEventListener('submit', addExistingPlayer);
     document.getElementById('team-list').addEventListener('click', handleListClick);
     document.getElementById('team-list').addEventListener('change', handleListChange);
     renderTeams();
@@ -113,11 +114,11 @@
     if (!data?.length) {
       section.innerHTML = '<div class="admin-empty">No players in this squad yet.</div>';
     } else {
-      section.innerHTML = `<div class="team-roster-actions"><button type="button" class="admin-button-secondary" data-action="add-player" data-team="${e(teamId)}">+ Add player</button></div>` +
+      section.innerHTML =
         data.map(row => `<div class="admin-row"><div class="admin-row-main"><strong>${e(row.players?.full_name || 'Player')}</strong><span>${row.players?.jersey_no ? `#${e(row.players.jersey_no)} · ` : ''}${e(row.players?.position || row.players?.membership_status || 'Squad member')}</span></div><button type="button" class="admin-button-secondary" data-action="invite-parent" data-player="${e(row.player_id)}">Invite parent</button><button type="button" class="admin-button-secondary" data-action="registration" data-player="${e(row.player_id)}">Registration</button><button type="button" class="admin-button-secondary" data-action="remove-player" data-team="${e(teamId)}" data-player="${e(row.player_id)}">Remove</button></div>`).join('');
     }
-    if (!section.querySelector('[data-action="add-player"]')) {
-      section.insertAdjacentHTML('afterbegin', `<div class="team-roster-actions"><button type="button" class="admin-button-secondary" data-action="add-player" data-team="${e(teamId)}">+ Add player</button></div>`);
+    if (!section.querySelector('[data-action="add-existing-player"]')) {
+      section.insertAdjacentHTML('afterbegin', `<div class="team-roster-actions"><button type="button" class="admin-button-secondary" data-action="add-existing-player" data-team="${e(teamId)}">+ Add from member list</button><button type="button" class="admin-button-secondary" data-action="add-player" data-team="${e(teamId)}">+ Create new player</button></div>`);
     }
   }
 
@@ -182,9 +183,90 @@
     }
   }
 
+  async function openExistingPlayerDialog(teamId) {
+    const form = document.getElementById('existing-player-form');
+    const select = document.getElementById('existing-player-select');
+    const submit = form.querySelector('[type="submit"]');
+    form.elements.team_id.value = teamId;
+    select.innerHTML = '<option value="">Loading players…</option>';
+    select.disabled = true;
+    submit.disabled = true;
+    document.getElementById('existing-player-dialog').showModal();
+    try {
+      const [{ data: players, error: playersError }, { data: roster, error: rosterError }] = await Promise.all([
+        window.supabase.from('players')
+          .select('id, full_name, date_of_birth')
+          .eq('club_id', context.profile.club_id)
+          .is('deleted_at', null)
+          .order('full_name'),
+        window.supabase.from('team_members')
+          .select('player_id')
+          .eq('team_id', teamId)
+          .is('left_at', null)
+      ]);
+      if (playersError) throw playersError;
+      if (rosterError) throw rosterError;
+      const rosterPlayerIds = new Set((roster || []).map(row => row.player_id));
+      const available = (players || []).filter(player => !rosterPlayerIds.has(player.id));
+      select.innerHTML = '<option value="">Select a player</option>' + available.map(player =>
+        `<option value="${window.AdminTools.escape(player.id)}">${window.AdminTools.escape(player.full_name)}${player.date_of_birth ? ` · ${window.AdminTools.escape(player.date_of_birth)}` : ''}</option>`
+      ).join('');
+      select.disabled = available.length === 0;
+      submit.disabled = available.length === 0;
+      if (!available.length) {
+        select.innerHTML = '<option value="">No eligible players found in Members</option>';
+        window.AdminTools.message('There are no other player records available to add. Create a new player or check the current roster.');
+      }
+    } catch (error) {
+      console.error('Available player records failed to load:', error);
+      select.innerHTML = '<option value="">Could not load players</option>';
+      submit.disabled = true;
+      window.AdminTools.message(error.message || 'Could not load player records.', true);
+    }
+  }
+
+  async function addExistingPlayer(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const submit = form.querySelector('[type="submit"]');
+    const teamId = form.elements.team_id.value;
+    const playerId = form.elements.player_id.value;
+    if (!teamId || !playerId) return;
+    submit.disabled = true;
+    try {
+      const { error } = await window.supabase.rpc('add_existing_player_to_team', {
+        p_team_id: teamId,
+        p_player_id: playerId
+      });
+      if (error) throw error;
+      document.getElementById('existing-player-dialog').close();
+      try {
+        await renderRoster(teamId, document.getElementById(`roster-${teamId}`));
+        window.AdminTools.message('Existing player added to the team.');
+      } catch (refreshError) {
+        console.error('Updated roster failed to load:', refreshError);
+        window.AdminTools.message('Player was added, but the roster could not refresh.', true);
+      }
+    } catch (error) {
+      console.error('Adding existing player to team failed:', error);
+      window.AdminTools.message(error.message || 'Could not add the player to this team.', true);
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
   document.getElementById('team-list').addEventListener('click', async event => {
-    const button = event.target.closest('[data-action="add-player"], [data-action="remove-player"], [data-action="registration"], [data-action="invite-parent"]');
+    const button = event.target.closest('[data-action="add-existing-player"], [data-action="add-player"], [data-action="remove-player"], [data-action="registration"], [data-action="invite-parent"]');
     if (!button) return;
+    if (button.dataset.action === 'add-existing-player') {
+      button.disabled = true;
+      try {
+        await openExistingPlayerDialog(button.dataset.team);
+      } finally {
+        button.disabled = false;
+      }
+      return;
+    }
     if (button.dataset.action === 'add-player') {
       const form = document.getElementById('player-form');
       form.elements.team_id.value = button.dataset.team;

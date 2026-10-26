@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0D0D0D"><title>Teams · Serdang Eagles</title>
   <link rel="icon" href="images/logo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/admin-pages.css"><link rel="stylesheet" href="css/fab.css"><link rel="stylesheet" href="css/bottom-nav.css">
+  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/admin-pages.css"><link rel="stylesheet" href="css/fab.css">
 </head>
 <body>
   <header class="app-header"><a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a>
@@ -21,7 +21,6 @@
       <div id="team-list" class="admin-list"><div class="admin-empty">Loading teams…</div></div>
     </div>
   </main>
-  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Admin navigation" hidden></nav>
   <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="teams" hidden></div>
   <dialog id="team-dialog" class="admin-dialog"><form id="team-form" class="admin-form">
     <div class="admin-panel-head"><h2 class="admin-section-title">Create team</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
@@ -45,10 +44,21 @@
     </div>
     <div class="admin-form-actions"><button type="button" class="admin-button-secondary" data-close-dialog>Cancel</button><button class="admin-button" type="submit">Add player</button></div>
   </form></dialog>
+  <dialog id="existing-player-dialog" class="admin-dialog"><form id="existing-player-form" class="admin-form">
+    <div class="admin-panel-head"><h2 class="admin-section-title">Add existing player</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
+    <input type="hidden" name="team_id">
+    <label>Choose a player from the club list
+      <select name="player_id" id="existing-player-select" required>
+        <option value="">Loading players…</option>
+      </select>
+    </label>
+    <p class="admin-muted">Players already on this team's active roster are excluded.</p>
+    <div class="admin-form-actions"><button type="button" class="admin-button-secondary" data-close-dialog>Cancel</button><button class="admin-button" type="submit">Add to team</button></div>
+  </form></dialog>
   <dialog id="registration-dialog" class="admin-dialog"><div class="admin-form">
     <div class="admin-panel-head"><h2 class="admin-section-title">Player registration</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
     <div id="registration-details" class="registration-details"></div>
   </div></dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script>
-  <script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/admin-tools.js"></script><script src="js/teams-admin.js?v=registration-details"></script><script src="js/admin-fab-menu.js"></script>
+  <script src="js/route-guard.js"></script><script src="js/admin-tools.js"></script><script src="js/teams-admin.js?v=existing-player"></script><script src="js/admin-fab-menu.js"></script>
 </body></html>

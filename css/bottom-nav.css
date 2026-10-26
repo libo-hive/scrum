@@ -1,9 +1,0 @@
-.app-bottom-nav { gap: 4px; }
-.app-bottom-nav .dock-item { min-width: 48px; padding: 0 9px; }
-.app-bottom-nav .dock-item-label { font-size: .57rem; }
-.app-bottom-nav[hidden] { display: none !important; }
-@media (max-width: 420px) {
-  .app-bottom-nav { gap: 2px; padding: 7px; }
-  .app-bottom-nav .dock-item { min-width: 43px; padding: 0 6px; }
-  .app-bottom-nav .dock-item-label { font-size: .52rem; letter-spacing: .02em; }
-}

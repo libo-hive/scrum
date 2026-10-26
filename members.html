@@ -9,9 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/coach.css">
   <link rel="stylesheet" href="css/admin.css">
-  <link rel="stylesheet" href="css/members.css">
+  <link rel="stylesheet" href="css/members.css?v=parent-player-link">
   <link rel="stylesheet" href="css/fab.css">
-  <link rel="stylesheet" href="css/bottom-nav.css">
 </head>
 <body>
   <header class="app-header">
@@ -30,7 +29,7 @@
       <div>
         <div class="dash-tag">Membership</div>
         <h1 class="dash-title">Invite your team</h1>
-        <p class="member-intro">For junior players, add them to a squad first, then create a parent invitation linked to that roster record. The parent completes the player and guardian details after approval.</p>
+        <p class="member-intro">Keep the full club directory here. Player records can exist before they join a team; create a parent invitation whenever you are ready to link an account.</p>
       </div>
       <a class="member-back" href="dashboard.html">← Dashboard</a>
     </div>
@@ -69,7 +68,7 @@
           </select>
         </div>
         <div class="form-group" id="invitePlayerGroup" hidden>
-          <label for="invitePlayer">Link parent to roster player</label>
+          <label for="invitePlayer">Link parent to player record</label>
           <select id="invitePlayer">
             <option value="">Select a player</option>
           </select>
@@ -99,10 +98,35 @@
       </div>
     </section>
 
+    <section class="member-panel" id="memberDirectory">
+      <div class="panel-heading directory-heading">
+        <div>
+          <div class="dash-tag">02 · CLUB ROSTER</div>
+          <h2 class="panel-title">All members <span id="directoryCount" class="count-badge">—</span></h2>
+        </div>
+        <button id="addPlayerButton" class="btn btn-primary" type="button">+ Add player</button>
+      </div>
+      <p class="directory-intro">Player records can be created without assigning a team or creating a login. An email account can be linked later.</p>
+      <div class="directory-toolbar">
+        <input id="directorySearch" type="search" placeholder="Search name, email or phone" aria-label="Search members">
+        <div id="directoryFilters" class="directory-filters" role="group" aria-label="Filter members by category">
+          <button type="button" class="directory-filter is-active" data-category="all" aria-pressed="true">All</button>
+          <button type="button" class="directory-filter" data-category="players" aria-pressed="false">Players</button>
+          <button type="button" class="directory-filter" data-category="coaches" aria-pressed="false">Coaches</button>
+          <button type="button" class="directory-filter" data-category="staff" aria-pressed="false">Staff</button>
+          <button type="button" class="directory-filter" data-category="parents" aria-pressed="false">Parents</button>
+          <button type="button" class="directory-filter" data-category="other" aria-pressed="false">Other</button>
+        </div>
+      </div>
+      <div id="memberDirectoryList" class="member-list">
+        <div class="loading-state"><div class="spinner"></div><span>Loading club roster</span></div>
+      </div>
+    </section>
+
     <section class="member-panel">
       <div class="panel-heading">
         <div>
-          <div class="dash-tag">02 · REVIEW</div>
+          <div class="dash-tag">03 · REVIEW</div>
           <h2 class="panel-title">Awaiting approval <span id="pendingCount" class="count-badge">—</span></h2>
         </div>
         <button id="refreshMembers" class="btn-outline" type="button">Refresh</button>
@@ -115,7 +139,7 @@
     <section class="member-panel">
       <div class="panel-heading">
         <div>
-          <div class="dash-tag">03 · MANAGE LINKS</div>
+          <div class="dash-tag">04 · MANAGE LINKS</div>
           <h2 class="panel-title">Recent invitations</h2>
         </div>
       </div>
@@ -126,13 +150,84 @@
   </main>
   <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="members" hidden></div>
 
-  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Admin navigation" hidden></nav>
+  <dialog id="addPlayerDialog" class="player-record-dialog">
+    <form id="addPlayerForm" class="player-record-form">
+      <div class="player-record-heading">
+        <div><div class="dash-tag">PLAYER RECORD</div><h2 class="panel-title">Add player</h2></div>
+        <button id="closePlayerDialog" class="btn-outline" type="button" aria-label="Close">×</button>
+      </div>
+      <p class="directory-intro">No team or login will be created. Parent consent can be collected when their account is set up.</p>
+      <fieldset>
+        <legend>Player details</legend>
+        <div class="player-form-grid">
+          <label class="span-2">Name as per MyKid / MyKad / Passport<input name="full_name" required maxlength="160" autocomplete="name"></label>
+          <label>Nickname<input name="nickname" maxlength="80"></label>
+          <label>Category<input name="category" required maxlength="80" placeholder="e.g. U12, U14, Adult"></label>
+          <label>Player's phone<input name="phone" type="tel" maxlength="30" autocomplete="tel"></label>
+          <label>Player email (optional)<input name="email" type="email" maxlength="254" autocomplete="email"></label>
+          <label>MyKid / MyKad / Passport no.<input name="identity_document" required maxlength="80"></label>
+          <label>Date of birth<input name="date_of_birth" type="date" required></label>
+          <label>Age this year<output id="playerAgeThisYear" class="player-age-output">—</output></label>
+          <label>Height (cm)<input name="height_cm" type="number" min="1" max="300" step="0.1"></label>
+          <label>Weight (kg)<input name="weight_kg" type="number" min="1" max="500" step="0.1"></label>
+          <label class="span-2">Home address<textarea name="address" required rows="2" maxlength="1000"></textarea></label>
+          <label class="span-2">Medical conditions<textarea name="medical_conditions" rows="2" maxlength="2000" placeholder="Allergies, asthma, diabetes, heart conditions, etc."></textarea></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Primary parent / guardian</legend>
+        <div class="player-form-grid">
+          <label>Full name<input name="primary_guardian_name" required maxlength="160"></label>
+          <label>MyKad / Passport no.<input name="primary_guardian_identity_document" required maxlength="80"></label>
+          <label>Phone number<input name="primary_guardian_phone" type="tel" required maxlength="30"></label>
+          <label>Email (optional)<input name="primary_guardian_email" type="email" maxlength="254"></label>
+          <label>Relationship<input name="primary_guardian_relationship" required maxlength="80" placeholder="e.g. Mother"></label>
+          <label class="span-2">Address<textarea name="primary_guardian_address" required rows="2" maxlength="1000"></textarea></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Additional contact <span class="optional-label">(optional)</span></legend>
+        <div class="player-form-grid">
+          <label>Name<input name="secondary_guardian_name" maxlength="160"></label>
+          <label>Relationship<input name="secondary_guardian_relationship" maxlength="80"></label>
+          <label>Phone number<input name="secondary_guardian_phone" type="tel" maxlength="30"></label>
+        </div>
+      </fieldset>
+      <div class="player-record-actions">
+        <button id="cancelPlayerDialog" class="btn-outline" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit">Save player record</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="linkParentDialog" class="player-record-dialog">
+    <form id="linkParentForm" class="player-record-form">
+      <div class="player-record-heading">
+        <div><div class="dash-tag">PARENT ACCOUNT</div><h2 class="panel-title">Link player to parent</h2></div>
+        <button id="closeLinkParentDialog" class="btn-outline" type="button" aria-label="Close">×</button>
+      </div>
+      <p class="directory-intro">This gives the selected parent access to this player's club dashboard. It does not create or change consent.</p>
+      <div class="form-group">
+        <label for="linkParentPlayer">Player</label>
+        <input id="linkParentPlayer" readonly>
+        <input id="linkParentPlayerId" type="hidden">
+      </div>
+      <div class="form-group">
+        <label for="linkParentAccount">Parent account</label>
+        <select id="linkParentAccount" required></select>
+        <small id="linkParentHint" class="form-hint">Only active parent accounts that completed onboarding are listed.</small>
+      </div>
+      <div class="player-record-actions">
+        <button id="cancelLinkParentDialog" class="btn-outline" type="button">Cancel</button>
+        <button id="saveParentLink" class="btn btn-primary" type="submit">Link player</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/route-guard.js?v=member-onboarding"></script>
-  <script src="js/bottom-nav.js"></script>
-  <script src="js/members.js?v=parent-linked-registration"></script>
+  <script src="js/members.js?v=parent-player-link"></script>
   <script src="js/admin-fab-menu.js"></script>
 </body>
 </html>

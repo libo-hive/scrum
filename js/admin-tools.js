@@ -31,7 +31,7 @@
     element.classList.toggle('is-error', isError);
   }
 
-  async function initialize() {
+  async function initialize(allowedRoles = ['admin', 'manager']) {
     const { data: { user }, error: authError } = await window.supabase.auth.getUser();
     if (authError) throw authError;
     if (!user) {
@@ -44,11 +44,10 @@
     ]);
     if (profileError) throw profileError;
     if (roleError) throw roleError;
-    if (!roles?.some(({ role }) => ['admin', 'manager'].includes(role))) {
+    if (!roles?.some(({ role }) => allowedRoles.includes(role))) {
       window.location.replace('dashboard.html');
       return null;
     }
-    window.BottomNav.render('admin');
     const { data: club, error: clubError } = await window.supabase.from('clubs')
       .select('id, name, slug, timezone, currency, domain, sport_types')
       .eq('id', profile.club_id).single();
@@ -65,7 +64,7 @@
     });
     document.querySelectorAll('[data-close-dialog]').forEach(button =>
       button.addEventListener('click', () => button.closest('dialog').close()));
-    return { user, profile, club };
+    return { user, profile, club, roles: roles.map(({ role }) => role) };
   }
 
   async function loadTeams(clubId) {

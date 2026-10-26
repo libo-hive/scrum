@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0D0D0D"><title>Matches · Serdang Eagles</title>
   <link rel="icon" href="images/logo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/coach-tools.css"><link rel="stylesheet" href="css/bottom-nav.css">
+  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/coach-tools.css"><link rel="stylesheet" href="css/fab.css">
 </head>
 <body>
   <header class="app-header"><a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a><div class="app-title"><div class="app-title-main">Coach workspace</div><div class="app-title-sub">Fixtures &amp; results</div></div><button class="icon-btn" id="logout-btn" title="Sign out" aria-label="Sign out">↗</button></header>
@@ -19,7 +19,7 @@
       <div id="match-list" class="coach-list"></div>
     </div>
   </main>
-  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Coach navigation" hidden></nav>
+  <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="coach-matches" hidden></div>
   <dialog id="match-dialog" class="coach-dialog">
     <form id="match-form" class="coach-form"><div class="coach-panel-head"><h2 class="coach-section-title">New fixture</h2><button class="sheet-close" type="button" data-close-dialog>×</button></div>
       <label>Opponent<input name="opponent" required maxlength="120" placeholder="Team name"></label>
@@ -35,6 +35,6 @@
       <button class="btn btn-primary coach-button" type="submit">Save result</button>
     </form>
   </dialog>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/bottom-nav.js"></script><script src="js/coach-tools.js"></script><script src="js/matches.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script><script src="js/route-guard.js"></script><script src="js/coach-tools.js"></script><script src="js/matches.js"></script><script src="js/admin-fab-menu.js"></script>
 </body>
 </html>

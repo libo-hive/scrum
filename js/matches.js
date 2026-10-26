@@ -16,12 +16,16 @@
       document.getElementById('add-match').addEventListener('click', openFixtureDialog);
       document.getElementById('match-form').addEventListener('submit', saveFixture);
       document.getElementById('result-form').addEventListener('submit', saveResult);
+      document.addEventListener('admin-fab-action', event => {
+        if (event.detail?.action === 'create-match') openFixtureDialog();
+      });
       document.querySelectorAll('.segment-btn').forEach(button => button.addEventListener('click', () => {
         filter = button.dataset.filter;
         document.querySelectorAll('.segment-btn').forEach(item => item.classList.toggle('active', item === button));
         render();
       }));
       loadMatches().catch(showError);
+      if (new URLSearchParams(window.location.search).get('quick') === 'create-match') openFixtureDialog();
     }).catch(showError);
   });
 

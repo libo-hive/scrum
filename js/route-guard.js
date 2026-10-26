@@ -24,7 +24,6 @@
     }
 
     document.getElementById('dashboardMain')?.removeAttribute('hidden');
-    document.getElementById('app-dock')?.removeAttribute('hidden');
   } catch (error) {
     console.error('Dashboard access check failed:', error);
     await supabase.auth.signOut();

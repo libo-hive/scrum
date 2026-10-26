@@ -27,13 +27,6 @@
       window.location.replace('login.html');
     });
 
-    document.querySelectorAll('.dock-item[data-soon="1"]').forEach(element => {
-      element.addEventListener('click', event => {
-        event.preventDefault();
-        window.alert('Coming soon');
-      });
-    });
-
     loadDashboard().catch(error => {
       console.error('Dashboard data failed to load:', error);
       if (!document.getElementById('member-dashboard').hidden) {
@@ -42,6 +35,10 @@
         target.textContent = error.message || 'Could not load your player dashboard. Please try again.';
       } else if (!document.getElementById('admin-dashboard').hidden) {
         document.getElementById('kpi-grid').textContent = 'Could not load membership overview.';
+      } else if (!document.getElementById('finance-dashboard').hidden) {
+        const target = document.getElementById('finance-dashboard-message');
+        target.hidden = false;
+        target.textContent = error.message || 'Could not load your finance dashboard. Please try again.';
       } else {
         document.getElementById('coach-team-notice').textContent =
           'Could not load your coach dashboard. Please try again or contact an administrator.';
@@ -73,6 +70,10 @@
 
     const roleSet = new Set(roles.map(({ role }) => role));
     if (!roleSet.has('admin') && !roleSet.has('manager')) {
+      if (roleSet.has('finance')) {
+        await renderFinanceDashboard(profile);
+        return;
+      }
       const role = roles.find(({ role: userRole }) =>
         ['head_coach', 'coach', 'assistant_coach'].includes(userRole))?.role;
       if (role) {
@@ -97,6 +98,111 @@
 
     renderKpis(active, pending, profileSetup, invites.count || 0);
     await Promise.all([loadPendingMembers(clubId), loadRecentInvitations(clubId)]);
+  }
+
+  async function renderFinanceDashboard(profile) {
+    document.getElementById('header-title').textContent = 'SERC Finance';
+    document.getElementById('header-sub').textContent = 'Accounts & payments';
+    document.getElementById('finance-dashboard').hidden = false;
+    document.getElementById('finance-fab-menu').hidden = false;
+    document.getElementById('finance-greeting').textContent = `Welcome, ${profile.full_name || 'Finance team'}.`;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const monthStartDate = new Date(monthStart.getTime() - monthStart.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    const [invoiceResult, paymentResult, transactionResult, clubResult] = await Promise.all([
+      fetchAllRows(() => supabase.from('invoices')
+        .select('id, invoice_no, due_date, total, currency, status, notes')
+        .eq('club_id', profile.club_id).order('created_at', { ascending: false })),
+      fetchAllRows(() => supabase.from('payments')
+        .select('invoice_id, amount, paid_at, method, status')
+        .eq('club_id', profile.club_id).order('paid_at', { ascending: false })),
+      fetchAllRows(() => supabase.from('finance_records')
+        .select('transaction_type, amount, transaction_date')
+        .eq('club_id', profile.club_id).gte('transaction_date', monthStartDate)),
+      supabase.from('clubs').select('currency').eq('id', profile.club_id).single()
+    ]);
+    if (invoiceResult.error) throw invoiceResult.error;
+    if (paymentResult.error) throw paymentResult.error;
+    if (transactionResult.error) throw transactionResult.error;
+    if (clubResult.error) throw clubResult.error;
+
+    const invoices = invoiceResult.data || [];
+    const payments = paymentResult.data || [];
+    const paidByInvoice = new Map();
+    payments.filter(payment => payment.status === 'success').forEach(payment => {
+      paidByInvoice.set(payment.invoice_id, (paidByInvoice.get(payment.invoice_id) || 0) + Number(payment.amount || 0));
+    });
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const eligibleInvoices = invoices.filter(invoice => !['draft', 'void', 'refunded'].includes(invoice.status));
+    const outstandingInvoices = eligibleInvoices.map(invoice => ({
+      ...invoice,
+      balance: Math.max(0, Number(invoice.total || 0) - (paidByInvoice.get(invoice.id) || 0))
+    })).filter(invoice => invoice.balance > 0);
+    const overdueInvoices = outstandingInvoices.filter(invoice =>
+      invoice.due_date && new Date(`${invoice.due_date}T00:00:00`) < today);
+    const dueSoon = outstandingInvoices.filter(invoice => {
+      if (!invoice.due_date) return false;
+      const due = new Date(`${invoice.due_date}T00:00:00`);
+      return due >= today && due <= nextWeek;
+    });
+    const collectedThisMonth = payments.filter(payment =>
+      payment.status === 'success' && payment.paid_at && new Date(payment.paid_at) >= monthStart
+    ).reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+    const transactionsThisMonth = (transactionResult.data || [])
+      .filter(record => record.transaction_date >= monthStartDate);
+    const otherIncomeThisMonth = transactionsThisMonth.filter(record => record.transaction_type === 'income')
+      .reduce((sum, record) => sum + Number(record.amount || 0), 0);
+    const expensesThisMonth = transactionsThisMonth.filter(record => record.transaction_type === 'expense')
+      .reduce((sum, record) => sum + Number(record.amount || 0), 0);
+    const currency = (clubResult.data.currency || 'MYR').trim();
+    const money = value => new Intl.NumberFormat('en-MY', {
+      style: 'currency', currency, maximumFractionDigits: 2
+    }).format(Number(value || 0));
+    const kpis = document.getElementById('finance-dashboard-kpis').querySelectorAll('.kpi-val');
+    kpis[0].textContent = money(outstandingInvoices.reduce((sum, invoice) => sum + invoice.balance, 0));
+    kpis[1].textContent = money(overdueInvoices.reduce((sum, invoice) => sum + invoice.balance, 0));
+    kpis[2].textContent = money(collectedThisMonth);
+    kpis[3].textContent = money(otherIncomeThisMonth);
+    kpis[4].textContent = money(expensesThisMonth);
+    kpis[5].textContent = String(dueSoon.length);
+
+    const escape = escapeHtml;
+    const outstandingList = document.getElementById('finance-outstanding-list');
+    outstandingList.innerHTML = overdueInvoices.slice(0, 5).concat(
+      outstandingInvoices.filter(invoice => !overdueInvoices.includes(invoice)).slice(0, Math.max(0, 5 - overdueInvoices.slice(0, 5).length))
+    ).map(invoice => `<article class="admin-row">
+      <div class="admin-row-main">
+        <span class="status-pill ${invoice.due_date && new Date(`${invoice.due_date}T00:00:00`) < today ? 'overdue' : ''}">${invoice.due_date && new Date(`${invoice.due_date}T00:00:00`) < today ? 'Overdue' : 'Outstanding'}</span>
+        <strong>${escape(invoice.invoice_no || 'Invoice')}</strong>
+        <span>${escape(invoice.notes || 'Club invoice')} · Due ${escape(invoice.due_date ? formatDate(invoice.due_date) : 'No due date')}</span>
+      </div>
+      <strong>${escape(money(invoice.balance))}</strong>
+    </article>`).join('') || '<div class="admin-empty">No outstanding invoices. Accounts are up to date.</div>';
+
+    const invoiceById = new Map(invoices.map(invoice => [invoice.id, invoice]));
+    const recentPayments = document.getElementById('finance-recent-payments');
+    recentPayments.innerHTML = payments.filter(payment => payment.status === 'success').slice(0, 5)
+      .map(payment => {
+        const invoice = invoiceById.get(payment.invoice_id);
+        return `<article class="admin-row"><div class="admin-row-main">
+          <strong>${escape(money(payment.amount))} · ${escape(invoice?.invoice_no || 'Payment')}</strong>
+          <span>${escape(formatDate(payment.paid_at))} · ${escape(String(payment.method || 'payment').replaceAll('_', ' '))}</span>
+        </div><span class="status-pill paid">Received</span></article>`;
+      }).join('') || '<div class="admin-empty">No payments have been recorded yet.</div>';
+  }
+
+  async function fetchAllRows(buildQuery) {
+    const pageSize = 1000;
+    const rows = [];
+    for (let offset = 0; ; offset += pageSize) {
+      const { data, error } = await buildQuery().range(offset, offset + pageSize - 1);
+      if (error) return { data: null, error };
+      rows.push(...(data || []));
+      if (!data || data.length < pageSize) return { data: rows, error: null };
+    }
   }
 
   async function renderMemberDashboard(profile, role) {
@@ -143,6 +249,8 @@
       return;
     }
 
+    const memberMenu = document.getElementById('member-fab-menu');
+    if (memberMenu) memberMenu.hidden = false;
     const pickerWrap = document.getElementById('member-child-picker-wrap');
     const picker = document.getElementById('member-child-picker');
     pickerWrap.hidden = !isParent || players.length < 2;
@@ -364,9 +472,12 @@
   }
 
   function setDockVisibility(view) {
-    if (window.BottomNav) window.BottomNav.render(view);
     const floatingMenu = document.getElementById('admin-fab-menu');
     if (floatingMenu) floatingMenu.hidden = view !== 'admin';
+    const coachMenu = document.getElementById('coach-fab-menu');
+    if (coachMenu) coachMenu.hidden = view !== 'coach';
+    const memberMenu = document.getElementById('member-fab-menu');
+    if (memberMenu) memberMenu.hidden = true;
   }
 
   function getTimeOfDay() {

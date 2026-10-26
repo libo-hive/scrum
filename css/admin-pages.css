@@ -1,7 +1,5 @@
-.admin-page-main { padding-bottom: 112px; }
-.admin-page-main [hidden], .admin-dock [hidden] { display: none !important; }
-.admin-dock { gap: 4px; }
-.admin-dock .dock-item { min-width: 48px; padding: 0 9px; }
+.admin-page-main { padding-bottom: 28px; }
+.admin-page-main [hidden] { display: none !important; }
 .page-intro { margin: -10px 0 20px; color: var(--gray); line-height: 1.5; }
 .page-message { margin: 12px 0 18px; padding: 12px 14px; border-radius: 10px; background: rgba(34,197,94,.12); color: var(--good); }
 .page-message.is-error { background: rgba(239,68,68,.12); color: var(--bad); }
@@ -61,6 +59,10 @@
 .summary-card-admin { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
 .summary-card-admin span { display: block; color: var(--gray); font-size: .62rem; text-transform: uppercase; }
 .summary-card-admin strong { display: block; margin-top: 5px; font: 1.15rem var(--font-h); }
+.finance-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.finance-transaction-amount { white-space: nowrap; }
+.finance-transaction-amount.is-income { color: var(--good); }
+.finance-transaction-amount.is-expense { color: var(--bad); }
 .announcement-card { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .announcement-card h3 { margin: 0 0 6px; font-size: .95rem; }
 .announcement-card p { margin: 0; color: var(--gray); font-size: .82rem; line-height: 1.5; white-space: pre-wrap; }
@@ -75,6 +77,8 @@
   .summary-grid-admin { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .admin-row { align-items: flex-start; flex-wrap: wrap; }
   .admin-row > .admin-button-secondary { margin-left: auto; }
+  .finance-actions { width: 100%; }
+  .finance-actions > button { flex: 1; }
   .team-card > select { max-width: none; width: 100%; }
   .registration-group { grid-template-columns: 1fr; }
 }

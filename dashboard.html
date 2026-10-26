@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="css/coach-tools.css">
   <link rel="stylesheet" href="css/admin-pages.css">
   <link rel="stylesheet" href="css/fab.css">
-  <link rel="stylesheet" href="css/bottom-nav.css">
 </head>
 <body>
 
@@ -62,6 +61,7 @@
     </section>
 
     <section id="member-dashboard" hidden>
+      <div class="admin-fab-menu" id="member-fab-menu" data-fab-menu="player" hidden></div>
       <div class="dash-section">
         <div class="dash-tag" id="member-dashboard-tag">Member access</div>
         <h1 class="dash-title" id="member-dashboard-title">Your dashboard</h1>
@@ -116,6 +116,7 @@
     </section>
 
     <section id="coach-dashboard" hidden>
+      <div class="admin-fab-menu" id="coach-fab-menu" data-fab-menu="coach-dashboard" hidden></div>
       <div class="dash-section">
         <div class="dash-tag">Overview</div>
         <h1 class="dash-title" id="coach-greeting"></h1>
@@ -182,15 +183,40 @@
         </a>
       </div>
     </section>
-  </main>
 
-  <nav class="dock app-bottom-nav" id="app-dock" aria-label="Main navigation" hidden></nav>
+    <section id="finance-dashboard" hidden>
+      <div class="admin-fab-menu" id="finance-fab-menu" data-fab-menu="finance-dashboard" hidden></div>
+      <div class="dash-section">
+        <div class="dash-tag">Accounts &amp; payments</div>
+        <h1 class="dash-title" id="finance-greeting">Finance dashboard</h1>
+        <p class="coach-team-label">Player collections, club income, expenses and outstanding invoices.</p>
+      </div>
+      <div id="finance-dashboard-message" class="coach-message is-error" role="status" aria-live="polite" hidden></div>
+      <div class="kpi-grid" id="finance-dashboard-kpis">
+        <div class="kpi"><div class="kpi-label">Outstanding</div><div class="kpi-val">—</div></div>
+        <div class="kpi kpi-warn"><div class="kpi-label">Overdue</div><div class="kpi-val">—</div></div>
+        <div class="kpi"><div class="kpi-label">Collected this month</div><div class="kpi-val">—</div></div>
+        <div class="kpi"><div class="kpi-label">Other income this month</div><div class="kpi-val">—</div></div>
+        <div class="kpi kpi-warn"><div class="kpi-label">Expenses this month</div><div class="kpi-val">—</div></div>
+        <div class="kpi"><div class="kpi-label">Due in 7 days</div><div class="kpi-val">—</div></div>
+      </div>
+      <section class="dash-section finance-dashboard-section">
+        <div class="dash-tag">Action required</div>
+        <h2 class="member-section-title">Outstanding invoices</h2>
+        <div id="finance-outstanding-list" class="admin-list"><div class="admin-empty">Loading invoices…</div></div>
+      </section>
+      <section class="dash-section finance-dashboard-section">
+        <div class="dash-tag">Latest activity</div>
+        <h2 class="member-section-title">Recent payments</h2>
+        <div id="finance-recent-payments" class="admin-list"><div class="admin-empty">Loading payments…</div></div>
+      </section>
+    </section>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/route-guard.js"></script>
-  <script src="js/bottom-nav.js"></script>
-  <script src="js/dashboard.js?v=role-dashboards"></script>
-  <script src="js/admin-fab-menu.js"></script>
+  <script src="js/dashboard.js?v=complete-finance"></script>
+  <script src="js/admin-fab-menu.js?v=complete-finance"></script>
 </body>
 </html>

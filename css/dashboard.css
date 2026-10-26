@@ -23,10 +23,6 @@
   color: var(--good);
   background: rgba(34,197,94,.1);
 }
-.dock-item[hidden] {
-  display: none !important;
-}
-
 .member-dashboard-card {
   padding: 22px;
   border: 1px solid var(--border, rgba(245,245,240,.1));
