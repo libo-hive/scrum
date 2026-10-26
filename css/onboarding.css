@@ -1,0 +1,130 @@
+.onboarding-container { max-width: 520px; }
+.onboarding-card { padding: 30px; }
+.onboarding-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--orange);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  margin-bottom: 18px;
+}
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 12px rgba(217,123,58,.65); }
+.step-line { width: 28px; height: 1px; background: rgba(217,123,58,.5); }
+.onboarding-card .auth-title { margin-bottom: 8px; }
+.onboarding-card .auth-sub { margin-bottom: 22px; line-height: 1.6; }
+.onboarding-card .form-group { margin-bottom: 15px; }
+.onboarding-card input,
+.onboarding-card select,
+.onboarding-card textarea {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--line);
+  color: var(--white);
+  padding: 13px 14px;
+  border-radius: 8px;
+  font: 400 0.92rem var(--font-b);
+}
+.onboarding-card select { appearance: auto; }
+.onboarding-card textarea { min-height: 82px; resize: vertical; }
+.onboarding-card input:focus,
+.onboarding-card select:focus,
+.onboarding-card textarea:focus { outline: 2px solid rgba(217,123,58,.55); border-color: var(--orange); }
+.onboarding-card input::placeholder,
+.onboarding-card textarea::placeholder { color: #777; }
+.role-fields { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; }
+.role-fields .form-group:has(textarea),
+.role-fields .form-group.full-width { grid-column: 1 / -1; }
+.onboarding-form-section {
+  grid-column: 1 / -1;
+  margin: 10px 0 2px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.onboarding-section-copy {
+  margin: 0 0 8px;
+  color: var(--gray);
+  font-size: .76rem;
+  line-height: 1.5;
+}
+.onboarding-card .form-group small {
+  color: var(--gray);
+  font-size: .68rem;
+  font-weight: 500;
+  text-transform: none;
+}
+.onboarding-optional {
+  color: var(--gray);
+  font: 500 .68rem var(--font-b);
+  letter-spacing: 0;
+}
+.onboarding-consents {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 9px;
+}
+.onboarding-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(245,245,240,.025);
+  color: var(--white);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+.onboarding-consent input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  margin-top: 1px;
+  accent-color: var(--orange);
+}
+.onboarding-consent strong { color: var(--orange); }
+.onboarding-consent-note {
+  margin: 0;
+  color: var(--warn);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+.profile-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(245,245,240,.03);
+  font-size: 0.8rem;
+}
+.profile-summary span { color: var(--gray); }
+.onboarding-message {
+  border: 1px solid rgba(217,123,58,.35);
+  background: rgba(217,123,58,.1);
+  color: var(--white);
+  padding: 13px 14px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+.onboarding-message.is-error { border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.1); }
+.onboarding-footnote { color: var(--gray); font-size: .72rem; text-align: center; margin-top: 18px; line-height: 1.5; }
+.onboarding-signout {
+  display: block;
+  background: transparent;
+  border: 0;
+  color: var(--orange);
+  cursor: pointer;
+  font: 700 .8rem var(--font-b);
+  margin: 16px auto 0;
+}
+.onboarding-card button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 520px) {
+  .onboarding-card { padding: 24px 18px; }
+  .role-fields { grid-template-columns: 1fr; }
+}

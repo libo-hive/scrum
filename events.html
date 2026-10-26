@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D"><title>Events · Serdang Eagles</title>
+  <link rel="icon" href="images/logo.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/coach.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/admin-pages.css"><link rel="stylesheet" href="css/fab.css">
+</head>
+<body>
+  <header class="app-header"><a href="dashboard.html" class="app-logo-link"><img src="images/logo.png" alt="Serdang Eagles" class="app-logo"></a>
+    <div class="app-title"><div class="app-title-main">Club management</div><div class="app-title-sub">Events calendar</div></div>
+    <button class="icon-btn" id="logout-btn" title="Sign out" aria-label="Sign out">↗</button>
+  </header>
+  <main class="app-main admin-page-main">
+    <div class="dash-section"><div class="dash-tag">Club calendar</div><h1 class="dash-title">Events</h1></div>
+    <p class="page-intro">Plan training, matches and club activities for every squad.</p>
+    <div id="page-message" class="page-message" role="status" aria-live="polite" hidden></div>
+    <section class="admin-panel">
+      <div class="admin-panel-head"><h2 class="admin-section-title">Calendar</h2></div>
+      <div class="calendar-month-nav"><button class="month-nav-btn" id="previous-month" aria-label="Previous month">‹</button><strong id="month-label"></strong><button class="month-nav-btn" id="next-month" aria-label="Next month">›</button></div>
+      <div class="calendar-days-admin"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div id="calendar-grid" class="calendar-grid-admin"></div>
+    </section>
+    <section class="admin-panel"><div class="admin-panel-head"><h2 class="admin-section-title">This month</h2></div><div id="event-list" class="admin-list"><div class="admin-empty">Loading events…</div></div></section>
+  </main>
+  <div class="admin-fab-menu" id="admin-fab-menu" data-fab-menu="events" hidden></div>
+  <dialog id="event-dialog" class="admin-dialog"><form id="event-form" class="admin-form">
+    <div class="admin-panel-head"><h2 class="admin-section-title">Create event</h2><button type="button" class="sheet-close" data-close-dialog aria-label="Close">×</button></div>
+    <div class="admin-form-grid">
+      <label>Event type<select name="type" required><option value="training">Training</option><option value="match">Match</option><option value="trial">Trial</option><option value="meeting">Meeting</option><option value="club_activity">Club activity</option><option value="camp">Camp</option><option value="social">Social</option></select></label>
+      <label>Team<select name="team_id" id="event-team"><option value="">All club</option></select></label>
+      <label class="span-2">Title<input name="title" required maxlength="120"></label>
+      <label>Starts<input name="starts_at" type="datetime-local" required></label>
+      <label>Ends<input name="ends_at" type="datetime-local"></label>
+      <label class="span-2">Venue<input name="venue" maxlength="160"></label>
+      <label class="span-2">Details<textarea name="description" rows="3"></textarea></label>
+    </div>
+    <div class="admin-form-actions"><button type="button" class="admin-button-secondary" data-close-dialog>Cancel</button><button class="admin-button" type="submit">Save event</button></div>
+  </form></dialog>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js"></script>
+  <script src="js/route-guard.js"></script><script src="js/admin-tools.js"></script><script src="js/events-admin.js"></script><script src="js/admin-fab-menu.js"></script>
+</body></html>
